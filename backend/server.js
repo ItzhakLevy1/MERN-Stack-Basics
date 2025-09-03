@@ -2,11 +2,16 @@
 require("dotenv").config();
 
 const express = require("express");
+const workoutRoutes = require("./routes/workouts"); // Import the workouts routes
 
 // Initialize the Express application
 const app = express();
 
-// Middleware to log request path and HTTP method
+/* Middleware - runs for every incoming request before reaching route handlers */
+
+app.use(express.json()); // Parse incoming requests with JSON payloads
+
+// Custom middleware to log request details (path and method)
 // This runs for every incoming request before reaching route handlers
 app.use((req, res, next) => {
   console.log(req.path, req.method);
@@ -15,12 +20,8 @@ app.use((req, res, next) => {
 
 /* Routes */
 
-// Respond to GET requests at the root URL ("/")
-// `req` contains information about the incoming request
-// `res` is used to send a response back to the client
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the app" }); // Send a JSON response
-});
+// All routes in workoutRoutes will be prefixed with "/api/workouts"
+app.use("/api/workouts", workoutRoutes);
 
 // Start the server and listen for incoming requests on the specified port
 // The port is defined in the .env file for flexibility (e.g., 4000 in development, different in production)
