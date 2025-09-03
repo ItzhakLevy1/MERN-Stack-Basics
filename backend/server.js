@@ -2,29 +2,42 @@
 require("dotenv").config();
 
 const express = require("express");
-const workoutRoutes = require("./routes/workouts"); // Import the workouts routes
+const mongoose = require("mongoose");
+const workoutRoutes = require("./routes/workouts"); // Import workout-related routes
 
 // Initialize the Express application
 const app = express();
 
-/* Middleware - runs for every incoming request before reaching route handlers */
+/* ----------------- Middleware ----------------- */
 
-app.use(express.json()); // Parse incoming requests with JSON payloads
+// Built-in middleware to parse incoming requests with JSON payloads
+app.use(express.json());
 
-// Custom middleware to log request details (path and method)
-// This runs for every incoming request before reaching route handlers
+// Custom middleware to log request details (path + method)
+// Runs for every incoming request before reaching any route handler
 app.use((req, res, next) => {
   console.log(req.path, req.method);
-  next(); // Pass control to the next middleware or route handler
+  next(); // Pass control to the next middleware/route handler
 });
 
-/* Routes */
+/* ----------------- Routes ----------------- */
 
-// All routes in workoutRoutes will be prefixed with "/api/workouts"
+// Prefix all workout routes with "/api/workouts"
 app.use("/api/workouts", workoutRoutes);
 
-// Start the server and listen for incoming requests on the specified port
-// The port is defined in the .env file for flexibility (e.g., 4000 in development, different in production)
-app.listen(process.env.PORT, () => {
-  console.log("Server listening on port", process.env.PORT);
-});
+/* ----------------- Database Connection ----------------- */
+
+// Connect to MongoDB using mongoose
+// process.env.MONGO_URI comes from the .env file
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    // If connection succeeds, start the server
+    app.listen(process.env.PORT, () => {
+      console.log("Connected to DB & listening on port", process.env.PORT);
+    });
+  })
+  .catch((error) => {
+    // Log any connection errors
+    console.error("Failed to connect to DB:", error);
+  });
