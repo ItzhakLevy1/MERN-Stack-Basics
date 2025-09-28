@@ -11,6 +11,11 @@ const WorkoutForm = () => {
 
     const workout = { title, load, reps };
 
+    if (!title || !load || !reps) {
+      setError("Please fill in all the fields");
+      return;
+    }
+
     const response = await fetch("api/workouts", {
       method: "POST",
       body: JSON.stringify(workout),
@@ -20,9 +25,10 @@ const WorkoutForm = () => {
     });
     const json = await response.json();
 
-    if (!response.ok) {
-      setError(json.error);
-    }
+    // Only relevant to MongoDB
+    // if (!response.ok) {
+    //   setError(json.error);
+    // }
 
     if (response.ok) {
       setTitle("");
