@@ -1,63 +1,90 @@
-// Importing dummy functions
-const MockDB = require("./mockData.js");
+const Workout = require("../models/workoutModel"); // Import the Workout model for DB operations
+const mongoose = require("mongoose");
 
-// 1. GET all workouts
-const getWorkouts = (req, res) => {
-  // Instead of : const workouts = await Workout.find({}).sort({createdAt: -1});
-  const workouts = MockDB.findAll();
+// GET ALL WORKOUTS
+const getWorkouts = async (req, res) => {
+  // Fetch all workout documents from DB and sort them from newest to oldest
+  const workouts = await Workout.find({}).sort({ createdAt: -1 });
+  // Send success response with all workouts as JSON
   res.status(200).json(workouts);
 };
 
-// 5. GET A SINGLE WORKOUT
-const getWorkout = (req, res) => {
-  const { id } = req.params;
-  const workout = MockDB.findById(id);
+// GET A SINGLE WORKOUT
+const getWorkout = async (req, res) => {
+  const { id } = req.params; // Extract the id from the request URL
+
+  // Validate that the provided id is a valid MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No such workout" });
+  }
+
+  // Find workout document by its id
+  const workout = await Workout.findById(id);
 
   if (!workout) {
-    return res.status(404).json({ error: "Workout not found" });
+    return res.status(404).json({ error: "No such workout" });
   }
+
   res.status(200).json(workout);
 };
 
-// 2. CREATE a new workout
-const createWorkout = (req, res) => {
-  // Instead of : const workout = await Workout.create({...req.body});
+// CREATE A NEW WORKOUT
+const createWorkout = async (req, res) => {
+  const { title, load, reps } = req.body; // Destructure the request body
+
   try {
-    const workout = MockDB.create(req.body);
-    res.status(201).json(workout);
+    // Create and save a new workout document in DB
+    const workout = await Workout.create({ title, load, reps });
+    res.status(200).json(workout);
   } catch (error) {
+    // Return validation or DB errors
     res.status(400).json({ error: error.message });
   }
 };
 
-// 3. DELETE a workout
-const deleteWorkout = (req, res) => {
-  // Instead of : const workout = await Workout.findOneAndDelete({_id: id});
+// DELETE A WORKOUT
+const deleteWorkout = async (req, res) => {
   const { id } = req.params;
-  const deleted = MockDB.delete(id);
 
-  if (!deleted) {
-    return res.status(404).json({ error: "Workout not found" });
+  // Validate that the provided id is a valid MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No such workout" });
   }
-  res.status(200).json({ message: "Deleted successfully" });
+
+  // Delete the workout document by its unique _id (default field in MongoDB)
+  const workout = await Workout.findOneAndDelete({ _id: id });
+
+  if (!workout) {
+    return res.status(404).json({ error: "No such workout" });
+  }
+
+  res.status(200).json(workout);
 };
 
-// 4. UPDATE a workout
-const updateWorkout = (req, res) => {
-  // Instead of : const workout = await Workout.findOneAndUpdate({_id: id}, {...req.body});
+// UPDATE A WORKOUT
+const updateWorkout = async (req, res) => {
   const { id } = req.params;
-  const updatedWorkout = MockDB.update(id, req.body);
 
-  if (!updatedWorkout) {
-    return res.status(404).json({ error: "Workout not found" });
+  // Validate that the provided id is a valid MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No such workout" });
   }
-  res.status(200).json(updatedWorkout);
+
+  // Update the workout with the fields provided in the request body
+  // Note: Without { new: true }, this returns the old document by default
+  const workout = await Workout.findOneAndUpdate({ _id: id }, { ...req.body });
+
+  if (!workout) {
+    return res.status(404).json({ error: "No such workout" });
+  }
+
+  res.status(200).json(workout);
 };
 
 module.exports = {
+  createWorkout,
   getWorkouts,
   getWorkout,
-  createWorkout,
   deleteWorkout,
   updateWorkout,
 };
