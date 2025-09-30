@@ -1,17 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
 import WorkoutDetails from "../components/WorkoutDetails";
 import WorkoutForm from "../components/WorkoutForm";
 
 const Home = () => {
-  const [workouts, setWorkouts] = useState(null);
+  // Access global workouts state and dispatch function from context
+  const { workouts, dispatch } = useWorkoutsContext();
 
   useEffect(() => {
     const fetchWorkouts = async () => {
+      // Fetch all workouts from backend API
       const response = await fetch("/api/workouts");
       const json = await response.json();
 
+      // If response is valid, update global state with workouts
       if (response.ok) {
-        setWorkouts(json);
+        dispatch({ type: "SET_WORKOUTS", payload: json });
       }
     };
     fetchWorkouts();
@@ -31,3 +35,9 @@ const Home = () => {
 };
 
 export default Home;
+
+// Home.js
+// This component serves as the main dashboard page.
+// It fetches all workouts from the backend API, stores them in global state
+// using context, and renders a list of WorkoutDetails components.
+// It also includes the WorkoutForm to allow users to add new workouts.
