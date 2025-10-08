@@ -21,6 +21,7 @@ export const workoutsReducer = (state, action) => {
 
 // 3. Context provider that wraps the app and makes state available globally
 export const WorkoutsContextProvider = ({ children }) => {
+  // Use useReducer to manage workouts state with the defined reducer and initial state of null workouts
   const [state, dispatch] = useReducer(workoutsReducer, {
     workouts: null,
   });
