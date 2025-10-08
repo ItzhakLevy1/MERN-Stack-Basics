@@ -6,13 +6,13 @@ export const WorkoutsContext = createContext();
 // 2. Reducer function to manage workouts state updates
 export const workoutsReducer = (state, action) => {
   switch (action.type) {
-    case "SET_WORKOUTS":
+    case "SET_WORKOUTS": // Action to set all workouts
       return {
-        workouts: action.payload,
+        workouts: action.payload, // Set the workouts state to the payload (array of workouts)
       };
-    case "CREATE_WORKOUT":
+    case "CREATE_WORKOUT": // Action to add a new workout
       return {
-        workouts: [action.payload, ...state.workouts],
+        workouts: [action.payload, ...state.workouts], // Add the new workout (action.payload) to the existing workouts array
       };
     default:
       return state;
@@ -26,6 +26,7 @@ export const WorkoutsContextProvider = ({ children }) => {
   });
 
   return (
+    // Provide state and dispatch function to children components
     <WorkoutsContext.Provider value={{ ...state, dispatch }}>
       {children}
     </WorkoutsContext.Provider>
