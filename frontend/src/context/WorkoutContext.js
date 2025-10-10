@@ -1,9 +1,9 @@
 import { createContext, useReducer } from "react";
 
-// 1. Create workouts context
+// Create workouts context
 export const WorkoutsContext = createContext();
 
-// 2. Reducer function to manage workouts state updates
+// Reducer function to manage workouts state updates
 export const workoutsReducer = (state, action) => {
   switch (action.type) {
     case "SET_WORKOUTS": // Action to set all workouts
@@ -19,7 +19,7 @@ export const workoutsReducer = (state, action) => {
   }
 };
 
-// 3. Context provider that wraps the app and makes state available globally
+// Context provider that wraps the app and makes state available globally
 export const WorkoutsContextProvider = ({ children }) => {
   // Use useReducer to manage workouts state with the defined reducer and initial state of null workouts
   const [state, dispatch] = useReducer(workoutsReducer, {
