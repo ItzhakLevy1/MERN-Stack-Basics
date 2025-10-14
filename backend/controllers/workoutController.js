@@ -32,6 +32,25 @@ const getWorkout = async (req, res) => {
 const createWorkout = async (req, res) => {
   const { title, load, reps } = req.body; // Destructure the request body
 
+  // Server side fields validation
+  let emptyFields = [];
+
+  // Check if any of the fields is missing its value
+  if (!title) {
+    emptyFields.push("title");
+  }
+  if (!load) {
+    emptyFields.push("load");
+  }
+  if (!reps) {
+    emptyFields.push("reps");
+  }
+
+  // If any of the fields is missing its value send an error message back to the client side
+  if (emptyFields.length > 0) {
+    return res.status(400).json({ error: "Please fill in all the fields", emptyFields });
+  }
+
   try {
     // Create and save a new workout document in DB
     const workout = await Workout.create({ title, load, reps });
