@@ -9,7 +9,10 @@ const Home = () => {
 
   useEffect(() => {
     const fetchWorkouts = async () => {
-      // Fetch all workouts from backend API
+      /* Fetch all workouts from backend API ( getWorkouts ),
+         We dont use "http://localhost:4000/api/workouts" since this is the only way the proxy parameter in package.json would work ("proxy": "http://localhost:4000")
+         and prevent a cors issue, the other option is to install the CORS package
+       */
       const response = await fetch("/api/workouts");
       const json = await response.json();
 
